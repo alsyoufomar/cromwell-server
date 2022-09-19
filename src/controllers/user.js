@@ -53,4 +53,38 @@ const createUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser };
+async function loginUser(req, res) {
+  try {
+    const schema = Joi.object({
+      email: Joi.string().min(3).max(30).required(),
+      password: Joi.string().min(3).max(30).required(),
+    });
+
+    const { error, value } = schema.validate(req.body);
+    if (error) {
+      res.status(400);
+      res.json({ error: error.details[0].message });
+      return;
+    }
+
+    const { email, password } = value;
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (user) {
+      const match = await bcrypt.compare(password, user.password);
+      if (match) {
+        const token = jwt.sign({ id: user.id }, key);
+        res.json({ token });
+      } else {
+        res.status(401);
+        res.json({ error: 'email or password is incorrect' });
+      }
+    } else {
+      res.status(401);
+      res.json({ error: 'email or password is incorrect' });
+    }
+  } catch (e) {
+    return res.json({ err: e.message });
+  }
+}
+
+module.exports = { createUser, loginUser };
