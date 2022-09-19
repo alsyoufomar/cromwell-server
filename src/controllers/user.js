@@ -87,4 +87,16 @@ async function loginUser(req, res) {
   }
 }
 
-module.exports = { createUser, loginUser };
+async function getUser(req, res) {
+  const userId = req.userId;
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) },
+    });
+    res.json({ user });
+  } catch (e) {
+    return res.json({ err: e.message });
+  }
+}
+
+module.exports = { createUser, loginUser, getUser };
