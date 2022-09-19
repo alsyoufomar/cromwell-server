@@ -9,6 +9,9 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
+const userRouter = require('./routers/user.js');
+app.use('/user', userRouter);
+
 app.get('*', (req, res) => {
   res.json({ ok: true });
 });
