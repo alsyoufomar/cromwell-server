@@ -1,4 +1,4 @@
-# Cromwell tech test
+# Cromwell Server
 
 ## Setting up
 
