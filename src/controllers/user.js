@@ -32,7 +32,6 @@ const createUser = async (req, res) => {
 
     if (userByEmail) {
       res.status(409);
-
       res.json({ error: 'This Email is already exists' });
       return;
     }
@@ -47,6 +46,7 @@ const createUser = async (req, res) => {
       },
     });
     const token = jwt.sign({ id: createdUser.id }, key);
+    res.status(200);
     res.json({ data: createdUser, token });
   } catch (e) {
     return res.json({ err: e.message });
@@ -73,6 +73,7 @@ async function loginUser(req, res) {
       const match = await bcrypt.compare(password, user.password);
       if (match) {
         const token = jwt.sign({ id: user.id }, key);
+        res.status(200);
         res.json({ token });
       } else {
         res.status(401);
@@ -93,6 +94,7 @@ async function getUser(req, res) {
     const user = await prisma.user.findUnique({
       where: { id: parseInt(userId) },
     });
+    res.status(200);
     res.json({ user });
   } catch (e) {
     return res.json({ err: e.message });
